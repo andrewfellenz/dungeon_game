@@ -12,11 +12,11 @@ import random
 # clear the screen and redraw the grid
 
 
-CELLS = [(0, 0), (0, 1), (0, 2), (0, 3), (0, 4),
-         (1, 0), (1, 1), (1, 2), (1, 3), (1, 4),
-         (2, 0), (2, 1), (2, 2), (2, 3), (2, 4),
-         (3, 0), (3, 1), (3, 2), (3, 3), (3, 4),
-         (4, 0), (4, 1), (4, 2), (4, 3), (4, 4)
+CELLS = [(0, 0), (1, 0), (2, 0), (3, 0), (4, 0),
+         (0, 1), (1, 1), (2, 1), (3, 1), (4, 1),
+         (0, 2), (1, 2), (2, 2), (3, 2), (4, 2),
+         (0, 3), (1, 3), (2, 3), (3, 3), (4, 3),
+         (0, 4), (1, 4), (2, 4), (3, 4), (4, 4)
         
 ]
 
@@ -53,26 +53,53 @@ def get_moves(player):
         moves.remove("DOWN")
     return moves
 
-monster, door, player = get_locations()
 
-top_message = ("Welcome to the dungeon!")
+def draw_map(player):
+    print(" _" * 5)
+    tile = "|{}"
 
-while True:
-    valid_moves = get_moves(player)
-    clear_screen()
-    if top_message:
-        print(top_message)
-    print("You're currently in room {}".format(player))
-    print("You can move {}".format(", ".join(valid_moves)))
-    print("Enter QUIT to quit")
 
-    move = input("> ").upper()
-            
-    if move == 'QUIT':
-        break
-    if move in valid_moves:
-        player = move_player(player, move)
-        top_message = None
-    else:
-        top_message = "** Walls are hard! Don't run into them!**"
-        continue
+    for cell in CELLS:
+        x, y = cell
+        if x < 4:
+            line_end = ""
+            if cell == player:
+                output = tile.format("X")
+            else:
+                output = tile.format("_")
+        else:
+            line_end = "\n"
+            if cell == player:
+                output = tile.format("X|")
+            else:
+                output = tile.format("_|")
+        print(output, end=line_end)
+
+
+def game_loop():
+    monster, door, player = get_locations()
+    top_message = ("Welcome to the dungeon!")
+    input("Press return to start")
+        
+    while True:
+        clear_screen()
+        draw_map(player)
+        valid_moves = get_moves(player)
+        if top_message:
+            print(top_message)
+        print("You're currently in room {}".format(player))
+        print("You can move {}".format(", ".join(valid_moves)))
+        print("Enter QUIT to quit")
+
+        move = input("> ").upper()
+
+        if move == 'QUIT':
+            break
+        if move in valid_moves:
+            player = move_player(player, move)
+            top_message = None
+        else:
+            top_message = "** Walls are hard! Don't run into them!**"
+        clear_screen()    
+
+game_loop()
