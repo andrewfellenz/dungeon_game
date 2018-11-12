@@ -17,11 +17,12 @@ CELLS = [(0, 0), (1, 0), (2, 0), (3, 0), (4, 0),
          (0, 2), (1, 2), (2, 2), (3, 2), (4, 2),
          (0, 3), (1, 3), (2, 3), (3, 3), (4, 3),
          (0, 4), (1, 4), (2, 4), (3, 4), (4, 4)
-        
-]
+         ]
+
 
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
+
 
 def get_locations():
     return random.sample(CELLS, 3)
@@ -57,8 +58,6 @@ def get_moves(player):
 def draw_map(player):
     print(" _" * 5)
     tile = "|{}"
-
-
     for cell in CELLS:
         x, y = cell
         if x < 4:
@@ -78,9 +77,11 @@ def draw_map(player):
 
 def game_loop():
     monster, door, player = get_locations()
-    top_message = ("Welcome to the dungeon!")
+    top_message = "Welcome to the dungeon!"
+    print(top_message)
+    top_message = None
     input("Press return to start")
-        
+
     while True:
         clear_screen()
         draw_map(player)
@@ -100,6 +101,7 @@ def game_loop():
             top_message = None
         else:
             top_message = "** Walls are hard! Don't run into them!**"
-        clear_screen()    
+        clear_screen()
+
 
 game_loop()
