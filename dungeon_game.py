@@ -1,5 +1,6 @@
 import os
 import random
+import time
 
 # draw grid
 # pick random location for player
@@ -55,7 +56,7 @@ def get_moves(player):
     return moves
 
 
-def draw_map(player):
+def draw_map(player, player_icon="X"):
     print(" _" * 5)
     tile = "|{}"
     for cell in CELLS:
@@ -63,7 +64,7 @@ def draw_map(player):
         if x < 4:
             line_end = ""
             if cell == player:
-                output = tile.format("X")
+                output = tile.format("{}".format(player_icon))
             else:
                 output = tile.format("_")
         else:
@@ -75,33 +76,71 @@ def draw_map(player):
         print(output, end=line_end)
 
 
+def end_game():
+    clear_screen()
+    print("\n ** See you next time! ** \n")
+    time.sleep(2.5)
+    clear_screen()
+    raise SystemExit()
+
+
 def game_loop():
+    clear_screen()
     monster, door, player = get_locations()
+    playing = True
     top_message = "Welcome to the dungeon!"
     print(top_message)
-    top_message = None
-    input("Press return to start")
+    top_message = "\n"
+    input("Press return/enter to start.")
 
-    while True:
+    while playing:
         clear_screen()
         draw_map(player)
         valid_moves = get_moves(player)
         if top_message:
             print(top_message)
-        print("You're currently in room {}".format(player))
-        print("You can move {}".format(", ".join(valid_moves)))
-        print("Enter QUIT to quit")
-
-        move = input("> ").upper()
-
+        print("One of these squares holds the door out of here.")
+        print("One of these squares is the home of a terrifying monster.")
+        print("You must try to escape the dungeon!")
+        print("Type {} to move your character.".format(", ".join(valid_moves)))
+        print("Enter QUIT to quit.")
+        try:
+            move = input("> ").upper()
+            if move.upper() not in ["LEFT", "RIGHT", "UP", "DOWN", "QUIT"]:
+                raise ValueError
+        except ValueError:
+            top_message = ("\n ** That's not a valid move."
+                           + "Please try again **"
+                           )
+            continue
         if move == 'QUIT':
-            break
+            end_game()
         if move in valid_moves:
             player = move_player(player, move)
-            top_message = None
+            top_message = "\n"
+
+            if player == monster:
+                clear_screen()
+                draw_map(player, "M")
+                print("\n ** Oh no! The monster got you!"
+                      + "Better luck next time! **"
+                      )
+                playing = False
+
+            if player == door:
+                clear_screen()
+                draw_map(player, "D")
+                print("\n ** You escaped! Congratulations! **\n")
+                playing = False
+
         else:
-            top_message = "** Walls are hard! Don't run into them!**"
-        clear_screen()
+            top_message = "\n ** Walls are hard! Don't run into them!**"
+    else:
+        if input("Play again? [Y/n] ").lower() != "n":
+            clear_screen()
+            game_loop()
+        else:
+            end_game()
 
 
 game_loop()
